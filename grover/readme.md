@@ -1,4 +1,4 @@
-# ⚛️ Algoritmo de Grover: Guia de Estudo (resumo)
+# ⚛️ Algoritmo de Grover: Guia resumido (em construção)
 
 Este documento apresenta uma visão detalhada do Algoritmo de Grover, desde a definição do problema até a fundamentação em álgebra linear, utilizando um exemplo prático de busca em uma lista de 8 elementos.
 
