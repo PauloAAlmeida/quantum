@@ -1,1 +1,66 @@
-readme
+# 🌍 O Problema do Caixeiro Viajante (TSP) e a Computação Quântica
+
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-green)
+![Tópico](https://img.shields.io/badge/Tópico-Otimização%20Combinatória%20%7C%20Computação%20Quântica-blue)
+
+## 🎯 Sobre o Projeto
+
+Este repositório é dedicado ao estudo do **Problema do Caixeiro Viajante (TSP)**, explorando desde as resoluções clássicas tradicionais até as novas fronteiras oferecidas pela **Computação Quântica**. O objetivo central é entender as limitações da computação clássica em problemas de otimização combinatória e investigar como algoritmos quânticos podem oferecer vantagens no futuro.
+
+---
+
+## 🗺️ O Problema: O que é o TSP?
+
+
+
+O Problema do Caixeiro Viajante pode ser formulado da seguinte maneira: 
+> *"Dada uma lista de cidades e as distâncias entre cada par delas, qual é a rota mais curta possível que visita cada cidade exatamente uma vez e retorna à cidade de origem?"*
+
+Matematicamente, o TSP é modelado como a busca pelo **ciclo hamiltoniano de menor custo** em um grafo ponderado e completo. Apesar de sua premissa simples, encontrar a solução ótima se torna inviável à medida que o número de cidades cresce.
+
+---
+
+## 💻 Abordagens Clássicas
+
+Historicamente, a computação clássica ataca o TSP de duas maneiras principais: buscando a perfeição (métodos exatos) ou buscando a eficiência (heurísticas).
+
+### 1. Métodos Exatos
+Estes algoritmos garantem encontrar a rota absolutamente mais curta, mas sofrem com o tempo de execução.
+* **Força Bruta:** Testa todas as permutações possíveis de rotas.
+* **Programação Dinâmica (Algoritmo de Bellman-Held-Karp):** Reduz o tempo calculando subproblemas, mas exige muita memória.
+* **Branch and Bound (Ramificar e Limitar):** Explora a árvore de soluções de forma inteligente, "podando" caminhos que já se provaram piores que a melhor solução atual.
+
+### 2. Métodos Heurísticos e Aproximados
+Como os métodos exatos demoram muito, algoritmos heurísticos tentam encontrar uma solução "boa o suficiente" em um tempo razoável.
+* **Algoritmos Gulosos (ex: Vizinho Mais Próximo):** O caixeiro sempre vai para a cidade não visitada mais próxima. Rápido, mas frequentemente não encontra a rota ótima.
+* **Metaheurísticas:** Algoritmos Genéticos, *Simulated Annealing* (Recozimento Simulado) e Otimização por Colônia de Formigas.
+
+---
+
+## ⚠️ As Limitações Clássicas
+
+O principal gargalo das abordagens clássicas é a **Complexidade Computacional**. O TSP é classificado como um problema **NP-Difícil**. 
+
+Para um número $n$ de cidades, o número de rotas possíveis em uma abordagem de força bruta cresce fatorialmente: $(n-1)! / 2$. 
+* Para 10 cidades, são cerca de **181 mil** rotas.
+* Para 20 cidades, salta para mais de **60 quatrilhões** de rotas.
+
+Mesmo usando a melhor abordagem exata clássica (Programação Dinâmica), a complexidade de tempo é de $O(n^2 2^n)$, o que significa que computadores clássicos eventualmente "travam" ou levam milhares de anos para resolver o problema de forma exata à medida que $n$ aumenta. É aqui que precisamos de um novo paradigma.
+
+---
+
+## ⚛️ A Abordagem Quântica (O Futuro)
+
+A Computação Quântica não calcula todas as rotas simultaneamente de forma "mágica", mas usa princípios como **Superposição** e **Emaranhamento Quântico** para explorar o espaço de soluções de maneira fundamentalmente diferente. 
+
+Neste repositório, exploraremos abordagens como:
+
+1.  **Quantum Approximate Optimization Algorithm (QAOA):** Um algoritmo híbrido (clássico-quântico) que utiliza portas quânticas para encontrar soluções aproximadas para problemas de otimização em computadores NISQ (*Noisy Intermediate-Scale Quantum*).
+2.  **Variational Quantum Eigensolver (VQE):** Outro método variacional que formula o TSP como o problema de encontrar o estado fundamental de um Hamiltoniano (física quântica).
+3.  **Quantum Annealing (ex: D-Wave):** Formulação do TSP como um problema QUBO (*Quadratic Unconstrained Binary Optimization*), permitindo que processadores de *annealing* quântico busquem o estado de menor energia do sistema (que corresponde à menor rota).
+
+---
+
+## 🚀 Como executar os códigos deste repositório
+
+*(Em breve - Detalhes sobre instalação de bibliotecas como Qiskit, D-Wave Ocean, NetworkX, etc.)*
