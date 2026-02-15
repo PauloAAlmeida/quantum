@@ -1,0 +1,92 @@
+00:13:24.200,00:13:27.200
+Auri Marcelo Rizzo Vincenzi: Hoje apenas no celular :-(
+
+00:15:14.099,00:15:17.099
+Wilson da Fonseca FONSECA: Veja na prática o DiraQ (OS), sistema operacional para computadores quânticos criado por brasileiros, em funcionamento. 
+
+https://www.youtube.com/watch?v=Rs-6rBqe5-Y
+
+00:16:03.960,00:16:06.960
+Rafael Almeida Bittencourt: mandou onde?
+
+00:16:35.669,00:16:38.669
+Auri Marcelo Rizzo Vincenzi: Olá Rafael, está no canvas da disciplina
+
+00:18:22.544,00:18:25.544
+Rafael Almeida Bittencourt: Obrigado, Auri
+
+00:18:32.679,00:18:35.679
+Rafael Almeida Bittencourt: 🔐 Testando RSA-2048...
+  Progresso: 0/1000
+
+00:19:26.969,00:19:29.969
+Rafael Almeida Bittencourt: cola o erro
+
+00:20:15.839,00:20:18.839
+Cosmo Santiago: File "/tmp/ipython-input-2209326457.py", line 73
+    self.message = b"Mensagem de teste para benchmark criptografico - SENAI
+                   ^
+SyntaxError: unterminated string literal (detected at line 73)
+
+00:20:31.236,00:20:34.236
+Iván René Roa González: No Colab corre rápido
+
+00:26:27.248,00:26:30.248
+Osvaldo Luiz dos Santos Pereira: Onde está o hands on?
+
+00:26:35.680,00:26:38.680
+Osvaldo Luiz dos Santos Pereira: Não encontrei na página
+
+00:26:48.095,00:26:51.095
+Carlos Gustavo de Medeiros Ballock: https://colab.research.google.com/
+
+00:26:53.673,00:26:56.673
+Jaqueline Pereira da Silva: tá na aula 2.  página 39
+
+00:27:00.830,00:27:03.830
+Cosmo Santiago: https://senaicimatec.instructure.com/courses/5999/pages/participe-do-encontro-sincrono-3
+
+00:27:29.691,00:27:32.691
+Wilson da Fonseca FONSECA: Pode executar o link direto: 
+
+https://colab.research.google.com/drive/19d4OAshuzMIhbyIPkdfs7K8EO2JWOC2x#scrollTo=iMM4hPIC33mW
+
+00:30:18.599,00:30:21.599
+sandro vilela: Consegui executar empregando o VSCODE, bastou carregar as bibliotecas e funcionou OK
+
+00:30:27.438,00:30:30.438
+Cosmo Santiago: cosmo.santiago@gmail.com
+
+00:30:37.146,00:30:40.146
+Gylles Ricardo Stroher: gyllesrs@gmail.com
+
+00:31:05.534,00:31:08.534
+Marcelo Santos do Nascimento: foi
+
+00:31:42.249,00:31:45.249
+Marcelo Santos do Nascimento: Agora que vi, posso compartilhar o link: https://colab.research.google.com/drive/1F-u05Gg2d5kyuGqPkV_AQtBM-qdCbX9P?usp=sharing
+
+00:31:54.741,00:31:57.741
+Marcelo Santos do Nascimento: pra quem quiser
+
+00:34:07.211,00:34:10.211
+Wilson da Fonseca FONSECA: https://colab.research.google.com/drive/19d4OAshuzMIhbyIPkdfs7K8EO2JWOC2x#scrollTo=iMM4hPIC33mW
+
+00:34:51.507,00:34:54.507
+Osvaldo Luiz dos Santos Pereira: rodei aqui
+
+00:34:54.276,00:34:57.276
+Osvaldo Luiz dos Santos Pereira: funcionou
+
+00:51:38.094,00:51:41.094
+Wilson da Fonseca FONSECA: Adorei seu posicionamento Profa., Jaqueline, O NIST não é o dono de toda a verdade!!!
+
+01:06:40.261,01:06:43.261
+Marcos Aurélio Duarte Carvalho: Olá, estou transcrevendo esta chamada com minha extensão Tactiq AI: https://tactiq.io/r/transcribe
+
+01:19:08.600,01:19:11.600
+Marcelo Santos do Nascimento: o nome que conheço é Bug Bounty
+
+01:32:06.674,01:32:09.674
+Adriano de Araújo Borges: old school
+

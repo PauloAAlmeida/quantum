@@ -1,0 +1,371 @@
+#!/usr/bin/env python3
+"""
+Script para comparar tamanhos de chaves e assinaturas entre algoritmos clássicos e pós-quânticos
+Requisitos: pip install liboqs matplotlib cryptography
+"""
+
+import os
+import sys
+import matplotlib.pyplot as plt
+import numpy as np
+from typing import Dict, Tuple
+import time
+
+# Verificar se liboqs está disponível
+try:
+    import oqs
+    LIBOQS_AVAILABLE = True
+except ImportError:
+    LIBOQS_AVAILABLE = False
+    print("⚠️  liboqs não encontrado. Instalando...")
+
+# Verificar cryptography
+try:
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import rsa, ec, dsa
+    from cryptography.hazmat.primitives import serialization
+except ImportError:
+    print("❌ cryptography não encontrado. Execute: pip install cryptography")
+    sys.exit(1)
+
+def install_liboqs():
+    """Instala liboqs se não estiver disponível"""
+    if not LIBOQS_AVAILABLE:
+        print("Instalando python-liboqs...")
+        os.system("pip install liboqs")
+        try:
+            import oqs
+            return True
+        except ImportError:
+            print("❌ Falha ao instalar liboqs. Usando dados simulados.")
+            return False
+    return True
+
+def gerar_chaves_classicas() -> Dict[str, Tuple[int, int]]:
+    """
+    Gera chaves para algoritmos clássicos e retorna tamanhos em bytes
+    Retorna: dict com nome_algoritmo: (tamanho_chave_publica, tamanho_chave_privada)
+    """
+    resultados = {}
+    
+    print("📊 Gerando chaves clássicas...")
+    
+    # RSA-2048
+    try:
+        rsa_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        pub_key_bytes = rsa_key.public_key().public_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        priv_key_bytes = rsa_key.private_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        resultados['RSA-2048'] = (len(pub_key_bytes), len(priv_key_bytes))
+        print(f"✅ RSA-2048: Pública={len(pub_key_bytes)} bytes, Privada={len(priv_key_bytes)} bytes")
+    except Exception as e:
+        print(f"❌ Erro ao gerar RSA-2048: {e}")
+    
+    # ECDSA P-256
+    try:
+        ec_key = ec.generate_private_key(ec.SECP256R1())
+        pub_key_bytes = ec_key.public_key().public_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        priv_key_bytes = ec_key.private_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        resultados['ECDSA P-256'] = (len(pub_key_bytes), len(priv_key_bytes))
+        print(f"✅ ECDSA P-256: Pública={len(pub_key_bytes)} bytes, Privada={len(priv_key_bytes)} bytes")
+    except Exception as e:
+        print(f"❌ Erro ao gerar ECDSA P-256: {e}")
+    
+    return resultados
+
+def gerar_chaves_pos_quanticas() -> Dict[str, Tuple[int, int]]:
+    """
+    Gera chaves para algoritmos pós-quânticos e retorna tamanhos em bytes
+    """
+    resultados = {}
+    
+    if not LIBOQS_AVAILABLE and not install_liboqs():
+        # Dados simulados baseados em especificações NIST
+        print("📊 Usando dados simulados para algoritmos pós-quânticos...")
+        resultados = {
+            'ML-KEM-512': (800, 1632),     # Kyber512
+            'ML-KEM-768': (1184, 2400),    # Kyber768
+            'ML-DSA-44': (1312, 2528),     # Dilithium2
+            'ML-DSA-65': (1952, 4000),     # Dilithium3
+        }
+        return resultados
+    
+    print("📊 Gerando chaves pós-quânticas...")
+    
+    # Algoritmos KEM (Key Encapsulation Mechanism)
+    kem_algorithms = ['Kyber512', 'Kyber768', 'Kyber1024']
+    for alg in kem_algorithms:
+        try:
+            if alg in oqs.get_enabled_KEM_mechanisms():
+                kem = oqs.KeyEncapsulation(alg)
+                public_key = kem.generate_keypair()
+                secret_key = kem.export_secret_key()
+                
+                # Mapear nomes para padrão NIST
+                if alg == 'Kyber512':
+                    name = 'ML-KEM-512'
+                elif alg == 'Kyber768':
+                    name = 'ML-KEM-768'
+                else:
+                    name = f'ML-KEM-{alg[-4:]}'
+                
+                resultados[name] = (len(public_key), len(secret_key))
+                print(f"✅ {name}: Pública={len(public_key)} bytes, Privada={len(secret_key)} bytes")
+        except Exception as e:
+            print(f"❌ Erro ao gerar {alg}: {e}")
+    
+    # Algoritmos de Assinatura Digital
+    sig_algorithms = ['Dilithium2', 'Dilithium3']
+    for alg in sig_algorithms:
+        try:
+            if alg in oqs.get_enabled_sig_mechanisms():
+                sig = oqs.Signature(alg)
+                public_key = sig.generate_keypair()
+                secret_key = sig.export_secret_key()
+                
+                # Mapear nomes para padrão NIST
+                if alg == 'Dilithium2':
+                    name = 'ML-DSA-44'
+                elif alg == 'Dilithium3':
+                    name = 'ML-DSA-65'
+                else:
+                    name = f'ML-DSA-{alg[-2:]}'
+                
+                resultados[name] = (len(public_key), len(secret_key))
+                print(f"✅ {name}: Pública={len(public_key)} bytes, Privada={len(secret_key)} bytes")
+        except Exception as e:
+            print(f"❌ Erro ao gerar {alg}: {e}")
+    
+    return resultados
+
+def medir_tamanhos_assinaturas() -> Dict[str, int]:
+    """
+    Mede tamanhos de assinaturas para diferentes algoritmos
+    """
+    resultados = {}
+    mensagem = b"Mensagem de teste para assinatura digital"
+    
+    print("📏 Medindo tamanhos de assinaturas...")
+    
+    # RSA-2048
+    try:
+        rsa_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        signature = rsa_key.sign(mensagem, hashes.SHA256())
+        resultados['RSA-2048'] = len(signature)
+        print(f"✅ Assinatura RSA-2048: {len(signature)} bytes")
+    except Exception as e:
+        print(f"❌ Erro ao assinar com RSA-2048: {e}")
+    
+    # ECDSA P-256
+    try:
+        ec_key = ec.generate_private_key(ec.SECP256R1())
+        signature = ec_key.sign(mensagem, ec.ECDSA(hashes.SHA256()))
+        resultados['ECDSA P-256'] = len(signature)
+        print(f"✅ Assinatura ECDSA P-256: {len(signature)} bytes")
+    except Exception as e:
+        print(f"❌ Erro ao assinar com ECDSA P-256: {e}")
+    
+    # Algoritmos pós-quânticos
+    if LIBOQS_AVAILABLE:
+        try:
+            import oqs
+            for alg in ['Dilithium2', 'Dilithium3']:
+                if alg in oqs.get_enabled_sig_mechanisms():
+                    sig = oqs.Signature(alg)
+                    public_key = sig.generate_keypair()
+                    signature = sig.sign(mensagem)
+                    
+                    name = 'ML-DSA-44' if alg == 'Dilithium2' else 'ML-DSA-65'
+                    resultados[name] = len(signature)
+                    print(f"✅ Assinatura {name}: {len(signature)} bytes")
+        except Exception as e:
+            print(f"❌ Erro ao gerar assinaturas pós-quânticas: {e}")
+    else:
+        # Dados simulados
+        resultados.update({
+            'ML-DSA-44': 2420,
+            'ML-DSA-65': 3293
+        })
+    
+    return resultados
+
+def criar_grafico_comparativo(chaves_classicas: Dict, chaves_pos_quanticas: Dict, 
+                            assinaturas: Dict) -> None:
+    """
+    Cria gráfico comparativo visual dos tamanhos
+    """
+    print("📈 Criando gráfico comparativo...")
+    
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
+    fig.suptitle('Comparação: Algoritmos Clássicos vs Pós-Quânticos', fontsize=16, fontweight='bold')
+    
+    # Gráfico 1: Chaves Públicas
+    todos_algoritmos = list(chaves_classicas.keys()) + list(chaves_pos_quanticas.keys())
+    tamanhos_pub = [chaves_classicas[alg][0] for alg in chaves_classicas.keys()] + \
+                   [chaves_pos_quanticas[alg][0] for alg in chaves_pos_quanticas.keys()]
+    
+    cores_pub = ['#2E86AB'] * len(chaves_classicas) + ['#A23B72'] * len(chaves_pos_quanticas)
+    
+    bars1 = ax1.bar(range(len(todos_algoritmos)), tamanhos_pub, color=cores_pub)
+    ax1.set_title('Tamanho das Chaves Públicas', fontweight='bold')
+    ax1.set_ylabel('Bytes')
+    ax1.set_xticks(range(len(todos_algoritmos)))
+    ax1.set_xticklabels(todos_algoritmos, rotation=45, ha='right')
+    ax1.grid(True, alpha=0.3)
+    
+    # Adicionar valores nas barras
+    for bar, valor in zip(bars1, tamanhos_pub):
+        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 50,
+                f'{valor}', ha='center', va='bottom', fontweight='bold')
+    
+    # Gráfico 2: Chaves Privadas
+    tamanhos_priv = [chaves_classicas[alg][1] for alg in chaves_classicas.keys()] + \
+                    [chaves_pos_quanticas[alg][1] for alg in chaves_pos_quanticas.keys()]
+    
+    bars2 = ax2.bar(range(len(todos_algoritmos)), tamanhos_priv, color=cores_pub)
+    ax2.set_title('Tamanho das Chaves Privadas', fontweight='bold')
+    ax2.set_ylabel('Bytes')
+    ax2.set_xticks(range(len(todos_algoritmos)))
+    ax2.set_xticklabels(todos_algoritmos, rotation=45, ha='right')
+    ax2.grid(True, alpha=0.3)
+    
+    for bar, valor in zip(bars2, tamanhos_priv):
+        ax2.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 100,
+                f'{valor}', ha='center', va='bottom', fontweight='bold')
+    
+    # Gráfico 3: Assinaturas
+    algs_assinatura = list(assinaturas.keys())
+    tamanhos_assinatura = list(assinaturas.values())
+    cores_assinatura = ['#2E86AB' if 'RSA' in alg or 'ECDSA' in alg else '#A23B72' 
+                       for alg in algs_assinatura]
+    
+    bars3 = ax3.bar(range(len(algs_assinatura)), tamanhos_assinatura, color=cores_assinatura)
+    ax3.set_title('Tamanho das Assinaturas', fontweight='bold')
+    ax3.set_ylabel('Bytes')
+    ax3.set_xticks(range(len(algs_assinatura)))
+    ax3.set_xticklabels(algs_assinatura, rotation=45, ha='right')
+    ax3.grid(True, alpha=0.3)
+    
+    for bar, valor in zip(bars3, tamanhos_assinatura):
+        ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 50,
+                f'{valor}', ha='center', va='bottom', fontweight='bold')
+    
+    # Gráfico 4: Comparação Geral (Radar)
+    ax4.axis('off')
+    
+    # Legenda
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor='#2E86AB', label='Algoritmos Clássicos'),
+        Patch(facecolor='#A23B72', label='Algoritmos Pós-Quânticos')
+    ]
+    ax4.legend(handles=legend_elements, loc='center', fontsize=12)
+    ax4.text(0.5, 0.3, 'Legenda', ha='center', va='center', transform=ax4.transAxes,
+             fontsize=14, fontweight='bold')
+    
+    plt.tight_layout()
+    plt.savefig('comparacao_algoritmos_criptograficos.png', dpi=300, bbox_inches='tight')
+    print("✅ Gráfico salvo como 'comparacao_algoritmos_criptograficos.png'")
+    plt.show()
+
+def analisar_impacto_bandwidth() -> None:
+    """
+    Analisa impacto em bandwidth de rede
+    """
+    print("\n🌐 Análise de Impacto em Bandwidth de Rede")
+    print("=" * 50)
+    
+    # Simulação de transferência de chaves/assinaturas
+    cenarios = {
+        "Handshake TLS (1000 conexões/min)": {
+            "RSA-2048": 294 * 1000,  # chave pública
+            "ECDSA P-256": 91 * 1000,
+            "ML-KEM-512": 800 * 1000,
+            "ML-DSA-44": 1312 * 1000
+        },
+        "Assinaturas digitais (500 docs/min)": {
+            "RSA-2048": 256 * 500,  # tamanho assinatura
+            "ECDSA P-256": 64 * 500,
+            "ML-DSA-44": 2420 * 500,
+            "ML-DSA-65": 3293 * 500
+        }
+    }
+    
+    for cenario, dados in cenarios.items():
+        print(f"\n📊 {cenario}")
+        print("-" * 40)
+        for algoritmo, bytes_min in dados.items():
+            mb_hora = (bytes_min * 60) / (1024 * 1024)
+            gb_dia = (mb_hora * 24) / 1024
+            print(f"{algoritmo:12}: {bytes_min:>8} bytes/min | "
+                  f"{mb_hora:>6.1f} MB/hora | {gb_dia:>5.2f} GB/dia")
+    
+    # Calculador de aumento de bandwidth
+    print(f"\n📈 Aumento de Bandwidth (Clássico → Pós-Quântico)")
+    print("-" * 50)
+    comparacoes = [
+        ("RSA-2048", "ML-KEM-512", 294, 800),
+        ("ECDSA P-256", "ML-DSA-44", 91, 1312),
+        ("RSA-2048 (assinatura)", "ML-DSA-44 (assinatura)", 256, 2420)
+    ]
+    
+    for classico, pos_quantico, tam_classico, tam_pos_quantico in comparacoes:
+        aumento = ((tam_pos_quantico - tam_classico) / tam_classico) * 100
+        print(f"{classico} → {pos_quantico}: +{aumento:>6.1f}% "
+              f"({tam_classico} → {tam_pos_quantico} bytes)")
+
+def main():
+    """Função principal que executa todos os passos"""
+    print("🔐 Comparação de Algoritmos Criptográficos: Clássicos vs Pós-Quânticos")
+    print("=" * 70)
+    
+    # Passo 1: Instalar bibliotecas (verificação)
+    print("\n🔧 Passo 1: Verificando dependências...")
+    if not LIBOQS_AVAILABLE:
+        install_liboqs()
+    
+    # Passo 2: Gerar chaves
+    print("\n🔑 Passo 2: Gerando chaves...")
+    chaves_classicas = gerar_chaves_classicas()
+    chaves_pos_quanticas = gerar_chaves_pos_quanticas()
+    
+    # Passo 3: Medir tamanhos
+    print("\n📏 Passo 3: Medindo tamanhos de assinaturas...")
+    assinaturas = medir_tamanhos_assinaturas()
+    
+    # Passo 4: Criar gráfico
+    print("\n📊 Passo 4: Criando visualização...")
+    criar_grafico_comparativo(chaves_classicas, chaves_pos_quanticas, assinaturas)
+    
+    # Passo 5: Analisar impacto
+    print("\n📈 Passo 5: Analisando impacto em bandwidth...")
+    analisar_impacto_bandwidth()
+    
+    print("\n✅ Análise completa! Verifique o arquivo 'comparacao_algoritmos_criptograficos.png'")
+    
+    # Resumo final
+    print("\n📋 RESUMO DOS RESULTADOS")
+    print("=" * 30)
+    print("Chaves Públicas (bytes):")
+    for alg, (pub, _) in {**chaves_classicas, **chaves_pos_quanticas}.items():
+        print(f"  {alg:12}: {pub:>6}")
+    
+    print("\nAssinaturas (bytes):")
+    for alg, tam in assinaturas.items():
+        print(f"  {alg:12}: {tam:>6}")
+
+if __name__ == "__main__":
+    main()
