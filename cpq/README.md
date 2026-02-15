@@ -24,8 +24,8 @@ O algoritmo de Shor utiliza a **Transformada Quântica de Fourier** para encontr
 
 | Problema | Complexidade Clássica | Complexidade Quântica (Shor) |
 |----------|----------------------|------------------------------|
-| Fatoração de $n$ bits | $O(\exp(n^{1/3}))$ | $O(n^3)$ |
-| Logaritmo Discreto | $O(\exp(n^{1/2}))$ | $O(n^3)$ |
+| Fatoração de n bits | O(exp(n^⅓)) | O(n³) |
+| Logaritmo Discreto | O(exp(n^½)) | O(n³) |
 
 **Implicação prática:** Uma chave RSA-2048 que levaria bilhões de anos para ser quebrada classicamente poderia ser comprometida em horas por um computador quântico com ~4.000 qubits lógicos estáveis.
 
@@ -54,9 +54,11 @@ Anteriormente conhecido como CRYSTALS-Kyber, o ML-KEM é o padrão para **encaps
 
 **Base matemática:** Problema Module Learning With Errors (MLWE)
 
-$$\mathbf{A} \cdot \mathbf{s} + \mathbf{e} = \mathbf{t} \pmod{q}$$
+```
+A · s + e = t (mod q)
+```
 
-onde $\mathbf{A}$ é uma matriz pública, $\mathbf{s}$ é o segredo, e $\mathbf{e}$ é um pequeno vetor de erro.
+onde **A** é uma matriz pública, **s** é o segredo, e **e** é um pequeno vetor de erro.
 
 | Variante | Nível de Segurança | Chave Pública | Chave Privada | Ciphertext |
 |----------|-------------------|---------------|---------------|------------|
@@ -86,9 +88,11 @@ Anteriormente SPHINCS+, oferece assinaturas baseadas apenas em funções hash (s
 
 ### Reticulados (Lattices)
 
-Um reticulado $\mathcal{L}$ em $\mathbb{R}^n$ é o conjunto de todas as combinações lineares inteiras de vetores base $\mathbf{b}_1, \ldots, \mathbf{b}_n$:
+Um reticulado **L** em **R**ⁿ é o conjunto de todas as combinações lineares inteiras de vetores base **b₁, ..., bₙ**:
 
-$$\mathcal{L} = \left\{ \sum_{i=1}^{n} z_i \mathbf{b}_i : z_i \in \mathbb{Z} \right\}$$
+```
+L = { z₁·b₁ + z₂·b₂ + ... + zₙ·bₙ : zᵢ ∈ Z }
+```
 
 **Problemas difíceis em reticulados:**
 
@@ -96,7 +100,7 @@ $$\mathcal{L} = \left\{ \sum_{i=1}^{n} z_i \mathbf{b}_i : z_i \in \mathbb{Z} \ri
 
 2. **Closest Vector Problem (CVP):** Dado um ponto alvo, encontrar o vetor do reticulado mais próximo.
 
-3. **Learning With Errors (LWE):** Distinguir amostras $(\mathbf{a}_i, \langle \mathbf{a}_i, \mathbf{s} \rangle + e_i)$ de amostras uniformemente aleatórias.
+3. **Learning With Errors (LWE):** Distinguir amostras `(aᵢ, ⟨aᵢ, s⟩ + eᵢ)` de amostras uniformemente aleatórias.
 
 Estes problemas são considerados difíceis mesmo para computadores quânticos, com os melhores algoritmos conhecidos tendo complexidade exponencial.
 
