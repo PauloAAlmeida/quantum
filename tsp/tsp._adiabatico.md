@@ -1,4 +1,5 @@
-graph TD
+```mermaid
+    graph TD
     %% ============ PROBLEMA ============
     TSP["🏙️ <b>PROBLEMA: TSP</b><br/>Encontrar rota de menor custo<br/>que visita N cidades uma vez<br/><i>NP-difícil, cresce com N!</i>"]
 
@@ -113,3 +114,5 @@ graph TD
     class SCHROD,PSIT,P0T,DWAVE,PFINAL passo4
     class FFT,RELACAO,STFT,QSP,NORMA passo5
     class COMP,LIMIT,PERSP passo6
+    
+```
